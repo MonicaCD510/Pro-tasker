@@ -24,7 +24,26 @@ router.post("/register", async (req, res) => {
 // LOGIN user
 router.post("/login", async (req, res) => {
   try {
-    res.json({ message: "Login route working" });
+    const user = await User.findOne({ email: req.body.email });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    const validPassword = await user.comparePassword(req.body.password);
+
+    if (!validPassword) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    res.json({
+      message: "Login successful",
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+      },
+    });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
