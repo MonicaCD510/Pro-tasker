@@ -6,6 +6,7 @@ const connectDB = require("./config/db");
 
 const taskRoutes = require("./routes/taskRoutes");
 const userRoutes = require("./routes/userRoutes");
+const auth = require("./middleware/auth");
 
 connectDB();
 
@@ -19,6 +20,13 @@ app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
   res.send("Pro-Tasker API Running");
+});
+
+app.get("/api/protected", auth, (req, res) => {
+  res.json({
+    message: "Access granted",
+    user: req.user,
+  });
 });
 
 const PORT = process.env.PORT || 3000;
