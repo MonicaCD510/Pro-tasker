@@ -48,4 +48,32 @@ router.get("/:id", auth, async (req, res) => {
   }
 });
 
+// UPDATE project by ID
+router.put("/:id", auth, async (req, res) => {
+  try {
+    const project = await Project.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        owner: req.user.id,
+      },
+      {
+        name: req.body.name,
+        description: req.body.description,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    res.json(project);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
 module.exports = router;
